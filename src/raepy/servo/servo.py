@@ -2,29 +2,37 @@ from typing import Type
 import time
 
 import pathlib
-from raepy.LSS_Library_Python.src import lss
+from raepy.servo.LSS_Library_Python import lss
 
-from raepy.LSS_Library_Python.src import lss_const as lssc
+from raepy.servo.LSS_Library_Python import lssc
 
 from .exceptions import SerialConnectionError
 
 from serial.tools import list_ports
 import os
-
+from pathlib import Path
 
 import shelve
-shelfdir = os.path.abspath(__file__ + "/../../") +"/shelf"
+
+
 
 class Servo(object):
-    def __init__(self, CST_LSS_Port="/dev/ttyS0", CST_LSS_Baud = lssc.LSS_DefaultBaud):
+    def __init__(self, mutex = None,CST_LSS_Port="/dev/ttyS0", CST_LSS_Baud = lssc.LSS_DefaultBaud):
         self._CST_LSS_Port = CST_LSS_Port
         self._CST_LSS_Baud = CST_LSS_Baud
         lss.initBus(self._CST_LSS_Port,self._CST_LSS_Baud)
         self._lss = lss.LSS(0)
-
-        shelf = shelve.open(shelfdir)
-        self._offset_angle = shelf["Servo_offset"]
+        self._shelfdir = os.path.abspath(__file__ + "/../../") +"/shelf"
+        self._mutex = mutex
+        self._mutex.acquire()
+        shelf = shelve.open(self._shelfdir)
+        if "Servo_offset" in shelf:
+            self._offset_angle = shelf["Servo_offset"]
+        else:
+            shelf["Servo_offset"] = 0
+            self._offset_angle = 0
         shelf.close()
+        self._mutex.release()
 
         self._trial_counter = 0
         self._led_switcher = {
@@ -198,10 +206,11 @@ class Servo(object):
         """
 
         self._offset_angle = self.actual_angle() + self._offset_angle
-
-        shelf = shelve.open(shelfdir)
+        self._mutex.acquire()
+        shelf = shelve.open(self._shelfdir)
         shelf["Servo_offset"] = self._offset_angle
         shelf.close()
+        self._mutex.release()
 
         return True
 

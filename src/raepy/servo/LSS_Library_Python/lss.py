@@ -14,7 +14,7 @@ import serial
 from math import sqrt, atan, acos, fabs
 
 ### Import constants
-from raepy.LSS_Library_Python.src import lss_const as lssc
+from raepy.servo.LSS_Library_Python import lss_const as lssc
 
 ### Class functions
 def initBus(portName, portBaud):

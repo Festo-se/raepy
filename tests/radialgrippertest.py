@@ -1,5 +1,5 @@
 import unittest
-from raepy import RadialGripper as gripper
+from raepy import gripper
 import time
 
 class TestRadialGripper(unittest.TestCase):
