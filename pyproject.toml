@@ -1,0 +1,11 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel",
+    "Shelves",
+    "typing",
+    "pyserial"
+
+
+]
+build-backend = "setuptools.build_meta"
