@@ -74,17 +74,19 @@ class Servo(object):
             if cnt > 5:
                 raise SerialConnectionError
 
-    def move_absolute_angle(self, angle, current=700):
+    def move_absolute_angle(self, angle, current=700,cb=None):
         """
         Absolute Positioning in 1/10 degree: 500 => 50°
         angle: target angle in 1/10 °
         current: threshold where motor halt and holds
         """
-
-        if abs(self.actual_angle() - angle) < 5:
+    
+        if abs(self.actual_angle() - angle - self._offset_angle) < 5:
             return
 
-        self._lss.move(int(angle) - self._offset_angle , current)
+        initial_angle = self.actual_angle()
+
+        self._lss.move(int(angle) - self._offset_angle, current)
 
         cnt = 0
         while self.get_target_angle() - self._offset_angle != angle:
@@ -96,6 +98,8 @@ class Servo(object):
 
         while abs(self.get_target_angle() - self._offset_angle - self.actual_angle()) > 10:
             self._lss.move(int(angle) + self._offset_angle, current)
+            if cb:
+                cb(initial_angle, angle - self._offset_angle, self.actual_angle())
             time.sleep(0.02)
 
         
@@ -214,7 +218,7 @@ class Servo(object):
 
         return True
 
-    def reset_motor(self):
+    def reset(self):
         """
         Reset Motor
         """
