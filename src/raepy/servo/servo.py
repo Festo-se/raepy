@@ -5,6 +5,7 @@ import pathlib
 from raepy.servo.LSS_Library_Python import lss
 
 from raepy.servo.LSS_Library_Python import lssc
+from serial.serialutil import SerialException
 
 from .exceptions import SerialConnectionError
 
@@ -17,11 +18,17 @@ import shelve
 
 
 class Servo(object):
-    def __init__(self, mutex = None,CST_LSS_Port="/dev/ttyS0", CST_LSS_Baud = lssc.LSS_DefaultBaud):
-        self._CST_LSS_Port = CST_LSS_Port
+    def __init__(self, mutex = None, CST_LSS_Baud = lssc.LSS_DefaultBaud):
+
         self._CST_LSS_Baud = CST_LSS_Baud
-        lss.initBus(self._CST_LSS_Port,self._CST_LSS_Baud)
-        self._lss = lss.LSS(0)
+        try:
+            lss.initBus("/dev/ttyS0",self._CST_LSS_Baud)
+            self._lss = lss.LSS(0)
+        except SerialException:
+            lss.initBus("/dev/ttyUSB0",self._CST_LSS_Baud)
+            self._lss = lss.LSS(0)
+
+
         self._shelfdir = os.path.abspath(__file__ + "/../../") +"/shelf"
         self._mutex = mutex
         self._mutex.acquire()
