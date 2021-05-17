@@ -9,7 +9,9 @@ from serial.serialutil import SerialException
 
 from .exceptions import SerialConnectionError
 
-from serial.tools import list_ports
+import sys
+import glob
+import serial
 import os
 from pathlib import Path
 
@@ -21,12 +23,15 @@ class Servo(object):
     def __init__(self, mutex = None, CST_LSS_Baud = lssc.LSS_DefaultBaud):
 
         self._CST_LSS_Baud = CST_LSS_Baud
-        try:
-            lss.initBus("/dev/ttyS0",self._CST_LSS_Baud)
-            self._lss = lss.LSS(0)
-        except SerialException:
-            lss.initBus("/dev/ttyUSB0",self._CST_LSS_Baud)
-            self._lss = lss.LSS(0)
+        serial_ports_list = self.serial_ports()
+
+        for port in serial_ports_list:
+            try:
+                self.init_interface(port)
+            except SerialException:
+                print("SerialException on port {}".format(port))
+            if self.get_target_angle() != None:
+                break
 
 
         self._shelfdir = os.path.abspath(__file__ + "/../../") +"/shelf"
@@ -66,6 +71,38 @@ class Servo(object):
             9:'Blocked',
             10:'Safe Mode'
         }
+
+    def init_interface(self, dev_string):
+        lss.initBus(dev_string,self._CST_LSS_Baud)
+        self._lss = lss.LSS(0)
+
+    def serial_ports(self):
+        """ Lists serial port names
+
+            :raises EnvironmentError:
+                On unsupported or unknown platforms
+            :returns:
+                A list of the serial ports available on the system
+        """
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            # this excludes your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+        return result
 
 
     def jog(self,speed, current=700):
