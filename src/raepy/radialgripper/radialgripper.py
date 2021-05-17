@@ -43,7 +43,7 @@ class RadialGripper(object):
         shelf.close()
         print("raepy : fingerlength set to {} m".format(length))
 
-    def to(self, position, feedback_cb = None):
+    def to(self, position, cb, current=1000):
         """
         30 = i * 10 
         i gear ratio
@@ -51,7 +51,8 @@ class RadialGripper(object):
         """
         self._servo.limp()
         goal_angle = 30 * (math.degrees(math.asin(((position/2)-0.035)/self._fingerlength)) + self._mid_axis_offset)
-        self._servo.move_absolute_angle(int(goal_angle)+self._zero_offset, current=1000)
+        self._servo.move_absolute_angle(int(goal_angle)+self._zero_offset, current=current, cb=cb)
+     
 
     def grasp(self, speed=360, current = 900, feedback_cb = None):
         self._servo.jog(-speed, current=current)
@@ -72,7 +73,7 @@ class RadialGripper(object):
             print("raepy: set fingerlength before calling calibrating the gripper")
             return
         self._servo.jog(-50)
-        while Servo.actual_current() < 550:
+        while self._servo.actual_current() < 550:
             time.sleep(0.01)
         self._servo.limp()
         time.sleep(1)
