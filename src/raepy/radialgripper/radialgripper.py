@@ -54,10 +54,12 @@ class RadialGripper(object):
         self._servo.move_absolute_angle(int(goal_angle)+self._zero_offset, current=current, cb=cb)
      
 
-    def grasp(self, speed=360, current = 900, feedback_cb = None):
+    def grasp(self, speed=360, current=900, feedback_cb = None):
         self._servo.jog(-speed, current=current)
         time.sleep(0.02)
         while self._servo.get_motor_mode() != 'Holding':
+            if feedback_cb:
+                feedback_cb(self.fingertip_distance(), self._servo.actual_current())
             time.sleep(0.01)
 
     def openfingers(self):
