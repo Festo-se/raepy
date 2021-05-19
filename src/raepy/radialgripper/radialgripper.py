@@ -66,8 +66,7 @@ class RadialGripper(object):
         self.to(0.2)
 
     def release(self, feedback_cb = None):
-        self._servo.move_relative_angle(400)
-        time.sleep(1)
+        self._servo.move_relative_angle(800)
         self._servo.limp()
 
     def calibrate(self, feedback_cb = None):
