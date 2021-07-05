@@ -23,8 +23,9 @@ git clone github.com/romzn/raepy.git
 cd raepy
 
 ## Build repository and Install
+python3 -m pip install --upgrade build
 pip3 -m build
-pip3 install
+pip3 install .
 
 # Start tests to see basic functionality (!!After the racktest and servoest an recalibration has to be made!!)
 pip3 -m unittest racktest.py
