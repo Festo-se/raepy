@@ -40,7 +40,7 @@ void transition_function(int * encoder_count, int * diff1){
                 max_encoder_count = *encoder_count;
             }
       
-            if (maxdiff >= 5) {
+            if (maxdiff >= 4) {
                 state = SUCKED;
             }
             break;
