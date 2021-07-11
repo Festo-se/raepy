@@ -6,7 +6,10 @@ import os
 import signal
 import time
 
+from ..utils.singleton import Singleton
+
 class VacuumModule(object):
+    __metaclass__ = Singleton
     def __init__(self):
         file = os.path.abspath(__file__ + "/../") + "/vacmod"
         print("Vacmod file path {}".format(file))

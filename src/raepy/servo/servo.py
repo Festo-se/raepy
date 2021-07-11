@@ -17,9 +17,10 @@ from pathlib import Path
 
 import shelve
 
-
+from ..utils.singleton import Singleton
 
 class Servo(object):
+    __metaclass__ = Singleton
     def __init__(self, mutex = None, CST_LSS_Baud = lssc.LSS_DefaultBaud):
 
         self._CST_LSS_Baud = CST_LSS_Baud

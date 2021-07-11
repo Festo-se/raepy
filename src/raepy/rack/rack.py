@@ -1,7 +1,9 @@
 
 import time
+from ..utils.singleton import Singleton
 
 class Rack(object):
+    __metaclass__ = Singleton
     def __init__(self,Servo):
         self._servo = Servo
 
