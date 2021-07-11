@@ -11,10 +11,12 @@ static int diff1 = 0;
 static int prevdiff = 0;
 static int diff2 = 0;
 static int maxdiff = 0;
+static int maxdiffprev = 0;
 static int lost_cnt = 0;
 
 void transition_function(int * encoder_count, int * diff1){
     maxdiff = max_encoder_count - *encoder_count;
+    
     diff2 = *diff1 - prevdiff;
     prevdiff = *diff1;
 
@@ -40,7 +42,7 @@ void transition_function(int * encoder_count, int * diff1){
                 max_encoder_count = *encoder_count;
             }
       
-            if (maxdiff >= 4) {
+            if (maxdiff + maxdiffprev >= 7) {
                 state = SUCKED;
             }
             break;
@@ -67,6 +69,8 @@ void transition_function(int * encoder_count, int * diff1){
 
         default: printf("default\n"); break;
     }
+
+    maxdiffprev = maxdiff;
 }
 
 void output_function() {
