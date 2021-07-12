@@ -1,10 +1,8 @@
-from typing import Type
 import time
 
-import pathlib
 from raepy.servo.LSS_Library_Python import lss
-
 from raepy.servo.LSS_Library_Python import lssc
+
 from serial.serialutil import SerialException
 
 from .exceptions import SerialConnectionError
@@ -13,15 +11,19 @@ import sys
 import glob
 import serial
 import os
-from pathlib import Path
 
 import shelve
 
 from ..utils.singleton import Singleton
 
+from threading import Lock
+
+mutex = Lock()
+
+
 class Servo(object):
     __metaclass__ = Singleton
-    def __init__(self, mutex = None, CST_LSS_Baud = lssc.LSS_DefaultBaud):
+    def __init__(self, CST_LSS_Baud = lssc.LSS_DefaultBaud):
 
         self._CST_LSS_Baud = CST_LSS_Baud
         serial_ports_list = self.serial_ports()

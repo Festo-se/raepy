@@ -11,12 +11,10 @@ from ..utils.singleton import Singleton
 class VacuumModule(object):
     __metaclass__ = Singleton
     def __init__(self):
+        print("Vacuum Module init")
         file = os.path.abspath(__file__ + "/../") + "/vacmod"
-        print("Vacmod file path {}".format(file))
         self.process = subprocess.Popen("nohup {} >/dev/null 2>&1 &".format(file),shell=True)
-        #self.process = subprocess.Popen("./vacmod",shell=True)
-        print("Vacmod Process started")
-        
+
         atexit.register(self.clean)
         self.actual_state = None
         self.__sucked_cb = None

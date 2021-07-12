@@ -1,18 +1,16 @@
 
 import math, time
-from raepy.src.raepy.utils.singleton import Singleton
 import shelve
 import os
 from ..utils.singleton import Singleton
-
-
-
+from ..servo.servo import Servo
+from raepy.servo.servo import mutex
 
 # Distance from finger joint to midline = 0.035
 class RadialGripper(object):
     __metaclass__ = Singleton
-    def __init__(self,mutex,Servo):
-        self._servo = Servo
+    def __init__(self):
+        self._servo = Servo()
         self._shelfdir = os.path.abspath(__file__ + "/../../") + "/shelf"
         self._mutex = mutex
         self._init_shelf()
