@@ -2,7 +2,7 @@
 import math, time
 import shelve
 import os
-from ..utils.singleton import Singleton
+from raepy.utils.singleton import Singleton
 from ..servo.servo import Servo
 from raepy.servo.servo import mutex
 
@@ -44,7 +44,7 @@ class RadialGripper(object):
         shelf.close()
         print("raepy : fingerlength set to {} m".format(length))
 
-    def to(self, position, cb, current=1000):
+    def to(self, position, cb=None, current=1000):
         """
         30 = i * 10 
         i gear ratio
@@ -70,12 +70,12 @@ class RadialGripper(object):
         self._servo.move_relative_angle(800)
         self._servo.limp()
 
-    def calibrate(self, feedback_cb = None):
+    def calibrate(self, current=700,feedback_cb = None):
         if self._fingerlength == None:
             print("raepy: set fingerlength before calling calibrating the gripper")
             return
         self._servo.jog(-50)
-        while self._servo.actual_current() < 550:
+        while self._servo.actual_current() < current:
             time.sleep(0.01)
         self._servo.limp()
         time.sleep(1)
@@ -90,6 +90,7 @@ class RadialGripper(object):
         shelf.close()
         self._mutex.release()
         print("raepy : offset angle set to {} deg".format(self._mid_axis_offset))
+        self._servo.limp()
 
     def fingertip_distance(self):
         """

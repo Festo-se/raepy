@@ -14,7 +14,7 @@ import os
 
 import shelve
 
-from ..utils.singleton import Singleton
+from raepy.utils.singleton import Singleton
 
 from threading import Lock
 
