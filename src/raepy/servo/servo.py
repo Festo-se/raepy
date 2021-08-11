@@ -287,9 +287,9 @@ class Servo(object):
         """
         cnt = 0
         while True:
-            pos = int(self._lss.getTargetPosition())
+            pos = self._lss.getTargetPosition()
             if pos != None:
-                return pos
+                return int(pos)
             time.sleep(0.02)
             cnt+=1
             if cnt > 10:
