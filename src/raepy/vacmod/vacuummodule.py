@@ -12,10 +12,9 @@ class VacuumModule(object):
     __metaclass__ = Singleton
     def __init__(self):
         print("Vacuum Module init")
-
-        if os.path.isfile("/tmp/vacmodstate"):
+        if not os.path.isfile("/tmp/vacmodstate"):
             os.mkfifo("/tmp/vacmodstate")
-        if os.path.isfile("/tmp/vacmodcmd"):
+        if not os.path.isfile("/tmp/vacmodcmd"):
             os.mkfifo("/tmp/vacmodcmd")
             
         file = os.path.abspath(__file__ + "/../") + "/vacmod"
