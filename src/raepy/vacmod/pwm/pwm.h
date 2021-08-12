@@ -3,8 +3,6 @@
 
 #include <softPwm.h>
 
-
-
 #define OUTPIN 0
 #define INIT_VAL 100
 #define RANGE 100
