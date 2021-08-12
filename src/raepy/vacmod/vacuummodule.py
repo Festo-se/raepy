@@ -12,11 +12,12 @@ class VacuumModule(object):
     __metaclass__ = Singleton
     def __init__(self):
         print("Vacuum Module init")
-        if not os.path.isfile("/tmp/vacmodstate"):
+        try:
             os.mkfifo("/tmp/vacmodstate")
-        if not os.path.isfile("/tmp/vacmodcmd"):
             os.mkfifo("/tmp/vacmodcmd")
-            
+        except:
+            pass
+        
         file = os.path.abspath(__file__ + "/../") + "/vacmod"
         self.process = subprocess.Popen("nohup {} >/dev/null 2>&1 &".format(file),shell=True)
 
