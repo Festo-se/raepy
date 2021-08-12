@@ -9,5 +9,5 @@ void init_pwm(){
 
 void write_pwm(int value) {
     softPwmWrite (OUTPIN, 100-value);
-    printf("write-pwm: %d\n", value);
+    printf("\nwrite-pwm: %d to pin %d\n", value, OUTPIN);
 }
