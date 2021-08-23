@@ -13,7 +13,7 @@ void * counter_reset(void * callback) {
     void (*cb)(int) = callback;
 
     while(1) {
-        delay(200);
+        delay(DELAY);
         cb(&counter);
         counter = 0;
     }
