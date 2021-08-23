@@ -43,7 +43,7 @@ void transition_function(int * encoder_count, int * diff1){
                 max_encoder_count = *encoder_count;
             }
       
-            if (maxdiff + maxdiffprev >= 6) {
+            if (maxdiff >= 5) {
                 state = SUCKED;
             }
             break;
@@ -51,7 +51,7 @@ void transition_function(int * encoder_count, int * diff1){
         case SUCKED: 
             if (actual_cmd_is("STOP")) {
                 state = OFF;
-            } else if (maxdiff >= 1 && *diff1 <= 0) {
+            } else if (maxdiff >= -6 && abs(*diff1) < 1) {
                 state = LOST;
             }
             break;
@@ -88,7 +88,7 @@ void output_function() {
         case ON:
             if (prev_state != state) {
                 write_state_to_pipe(state);
-                write_pwm(100);
+                write_pwm(95);
                 printf("ON\n");
             }
 
@@ -96,6 +96,7 @@ void output_function() {
 
         case SUCKED:
             if (prev_state != state) {
+                write_pwm(100);
                 write_state_to_pipe(state);
                 printf("SUCKED\n");
             }
