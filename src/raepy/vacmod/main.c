@@ -29,6 +29,8 @@ int main(void) {
     init_encoder(encoder_result);
     init_pwm();
     init_ipc();
-    while(1);
+    while(1) {
+        delay(100);
+    }
     printf("End");
 }
