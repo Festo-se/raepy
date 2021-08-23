@@ -37,7 +37,11 @@ pip3 -m unittest racktest.py
 To move the gripper or the rack the their specific objects has to be loaded in the current script.
 
 ```python
-from raepy import rack, gripper, servo
+from raepy import Rack, RadialGripper, Servo
+
+rack = Rack() 
+gripper = RadialGripper()
+servo = Servo()
 
 
 rack.out() # brings the rack to the front position (+8cm) and the grippers back
