@@ -2,6 +2,7 @@
 #include "../pwm/pwm.h"
 #include <stdio.h>
 #include "../ipc/ipc.h"
+#include <stdlib.h>
 
 static state_t state = OFF;
 static state_t prev_state = INIT;
@@ -42,7 +43,7 @@ void transition_function(int * encoder_count, int * diff1){
                 max_encoder_count = *encoder_count;
             }
       
-            if (maxdiff + maxdiffprev >= 7) {
+            if (maxdiff + maxdiffprev >= 6) {
                 state = SUCKED;
             }
             break;
@@ -50,7 +51,7 @@ void transition_function(int * encoder_count, int * diff1){
         case SUCKED: 
             if (actual_cmd_is("STOP")) {
                 state = OFF;
-            } else if (maxdiff <= 1 && *diff1 == 0) {
+            } else if (maxdiff >= 1 && *diff1 <= 0) {
                 state = LOST;
             }
             break;
