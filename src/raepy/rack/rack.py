@@ -32,9 +32,10 @@ class Rack(object):
                 return "No Rack inserted"
             if cb:
                 cb(self._servo.actual_angle(), self._servo.actual_current())
-
+        self._servo.limp()
+        time.sleep(1)
         self._servo.set_zero_here()
         self.to(0.005)
-        time.sleep(1)
+        self._servo.limp()
     
 
