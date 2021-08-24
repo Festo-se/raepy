@@ -31,6 +31,9 @@ void * read_cmd_from_pipe(){
 void write_state_to_pipe(state_t state){
     char statestr[10];
     switch(state) {
+        case WARMUP:
+            strcpy(statestr, "WARMUP");
+            break;       
         case OFF:
             strcpy(statestr, "OFF");
             break;

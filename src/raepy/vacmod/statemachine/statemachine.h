@@ -1,6 +1,6 @@
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
-typedef enum {INIT, OFF, ON, SUCKED, LOST} state_t;
+typedef enum {INIT, WARMUP, OFF, ON, SUCKED, LOST} state_t;
 
 static int max_encoder_count;
 

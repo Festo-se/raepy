@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "../ipc/ipc.h"
 #include <stdlib.h>
+#include <wiringPi.h>
 
 static state_t state = OFF;
 static state_t prev_state = INIT;
@@ -14,8 +15,13 @@ static int diff2 = 0;
 static int maxdiff = 0;
 static int maxdiffprev = 0;
 static int lost_cnt = 0;
+static int warumup_cnt = 0;
+
+char current_cmd[20];
 
 void transition_function(int * encoder_count, int * diff1){
+    strcpy(current_cmd, get_actual_cmd());
+
     maxdiff = max_encoder_count - *encoder_count;
     diff2 = *diff1 - prevdiff;
     prevdiff = *diff1;
@@ -24,8 +30,34 @@ void transition_function(int * encoder_count, int * diff1){
         printf("enc-cnt: %d\t diff1: %d \t diff2: %d \t %d\n", *encoder_count, *diff1, diff2, (maxdiff) );
     
     switch(state) {
+        
+
+        case WARMUP:
+            printf("Warmup Counter: %d\n",warumup_cnt);
+            if (actual_cmd_is("START")) {
+                state = ON;
+                warumup_cnt = 0;
+                return;
+            }
+            if (actual_cmd_is("STOP")) {
+                state = OFF;
+                warumup_cnt = 0;
+                return;
+            }
+            if (warumup_cnt > 120*5) {
+                state = OFF;
+                warumup_cnt = 0;
+                return;
+            }
+            break;
+
 
         case OFF:
+            if (actual_cmd_is("WARMUP"))
+            {
+                state = WARMUP;
+                return;
+            }
             if (actual_cmd_is("START")) {
                 state = ON;
                 return;
@@ -42,7 +74,7 @@ void transition_function(int * encoder_count, int * diff1){
                 max_encoder_count = *encoder_count;
             }
       
-            if (maxdiff >= 4) {
+            if (maxdiff + maxdiffprev >= 5 || maxdiff >= 4) {
                 state = SUCKED;
             }
             break;
@@ -50,7 +82,7 @@ void transition_function(int * encoder_count, int * diff1){
         case SUCKED: 
             if (actual_cmd_is("STOP")) {
                 state = OFF;
-            } else if (maxdiff <= 0 && abs(*diff1) < 1) {
+            } else if (maxdiff <= 1 && abs(*diff1) < 1) {
                 state = LOST;
             }
             break;
@@ -75,6 +107,16 @@ void transition_function(int * encoder_count, int * diff1){
 
 void output_function() {
     switch(state) {
+        case WARMUP:
+            if (prev_state != state) {
+                write_state_to_pipe(state);
+                printf("WARMUP\n");
+                write_pwm(100);                
+            }
+            
+            warumup_cnt++;
+            break;
+
         case OFF:
             if (prev_state != state) {
                 max_encoder_count = 0;
@@ -95,7 +137,6 @@ void output_function() {
 
         case SUCKED:
             if (prev_state != state) {
-
                 write_state_to_pipe(state);
                 printf("SUCKED\n");
             }
@@ -118,8 +159,6 @@ void state_machine(int * encoder_count, int * diff1){
 }
 
 int actual_cmd_is(char * statestr) {
-    char state[20];
-    strcpy(state, get_actual_cmd());
-    strtok(state, "\n");
-    return (strcmp(state,statestr) == 0);
+    strtok(current_cmd, "\n");
+    return (strcmp(current_cmd,statestr) == 0);
 }
