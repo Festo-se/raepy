@@ -24,13 +24,13 @@ cd raepy
 
 ## Build repository and Install
 python3 -m pip install --upgrade build
-pip3 -m build
+python -m build
 pip3 install .
 
 # Start tests to see basic functionality (!!After the racktest and servoest an recalibration has to be made!!)
-pip3 -m unittest racktest.py
-pip3 -m unittest radialgrippertest.py
-pip3 -m unittest racktest.py
+python3 -m unittest racktest.py
+python3 -m unittest radialgrippertest.py
+python3 -m unittest racktest.py
 ```
 
 # Basic functionality
