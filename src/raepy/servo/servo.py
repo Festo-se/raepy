@@ -1,7 +1,7 @@
 import time
 
-from raepy.servo.LSS_Library_Python import lss
-from raepy.servo.LSS_Library_Python import lssc
+from .LSS_Library_Python import lss
+from .LSS_Library_Python import lssc
 
 from serial.serialutil import SerialException
 
