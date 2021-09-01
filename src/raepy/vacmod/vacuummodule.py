@@ -44,6 +44,13 @@ class VacuumModule(object):
         if lost_cb:
             self.__lost_cb = lost_cb
 
+    def warmup(self):
+        with open("/tmp/vacmodcmd", "w") as startcmd:
+            startcmd.write("WARMUP")
+        time.sleep(1)
+        while self.current_state() == "WARMUP":
+            time.sleep(0.5)
+
         
     def release(self):
         with open("/tmp/vacmodcmd", "w") as stopcmd:
@@ -64,6 +71,7 @@ class VacuumModule(object):
                         self.__sucked_cb(state)
                     elif self.actual_state == "LOST" and self.__lost_cb != None:
                         self.__lost_cb(state)
+                    
 
 
     def print_state(self,state):
