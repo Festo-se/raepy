@@ -74,6 +74,9 @@ class Servo(object):
             9:'Blocked',
             10:'Safe Mode'
         }
+    
+    def __del__(self):
+        self.limp()
 
     def init_interface(self, dev_string):
         lss.initBus(dev_string,self._CST_LSS_Baud)
