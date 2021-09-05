@@ -119,6 +119,9 @@ class Led(object):
         else:
             self.__blink_freq = freq
             self.__stop_event.set()
+    
+    def blink_on(self,freq=7):
+        self.blink(freq=freq,cnt=0)
 
     def stop_blink(self):
         self.__stop_event.clear()
