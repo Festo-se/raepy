@@ -5,16 +5,9 @@ from .button import Button
 import time
 
 class LedButton(object):
-    def __init__(self,version="realsense"):
-        if version == "realsense":
-            self.led = Led()
-            self.button = Button()
-
-        if version == "kinect":
-            self.led1 = Led()
-            self.button1 = Button()
-            self.led2 = Led(pin=16)
-            self.button2 = Button(pin=18)
+    def __init__(self,ledpin=15,buttonpin=13):
+        self.led = Led(ledpin)
+        self.button = Button(buttonpin)
 
 
 if __name__ == "__main__":
