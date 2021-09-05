@@ -97,11 +97,11 @@ np.save("ECG_EngZeeMod", int_ecg)
 The heartbeat pattern run as thread to be able to let it run in the backround.
 
 ```python
-# The heartbeat pattern has 3 speedmodes (1,2,3) which can be set through the "speed" parameter: 
+# The heartbeat pattern has an input parameter speed (1-100) to set the heart frequency: 
 lb.led.heartbeat_on(speed=1)
 
 # While running the heartbeat, the speed can be changed with
-lb.led.set_heartbeat_speed(speed=3)
+lb.led.set_heartbeat_speed(speed=99)
 
 # Stop heartbeat pattern 
 lb.led.heartbeat_off()

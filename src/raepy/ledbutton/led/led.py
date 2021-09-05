@@ -11,7 +11,7 @@ class Led(object):
         self.__pin = pin
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.__pin, GPIO.OUT)
-        self.__ledpwm = GPIO.PWM(self.__pin, 120)
+        self.__ledpwm = GPIO.PWM(self.__pin,700)
         self.__stop_event = threading.Event()
         self.__blink_thread = threading.Thread(target=self.__blinker, args=[self.__stop_event])
         self.__hearbeat_switch = threading.Event()
@@ -22,31 +22,31 @@ class Led(object):
         self.set_heartbeat_speed(speed=1)
         self.__blink_thread.start()
         self.__blink_freq = 1
-        self.__led_state = ""
+        self.__led_intensity = 0
+        self.__ledpwm.start(100)
 
     def __del__(self):
         GPIO.cleanup()
 
-    def dimm(self,percentage):
-        self.__ledpwm.ChangeDutyCycle(percentage)
+    def dimm(self,intensity):
+        self.__led_intensity = intensity
+        self.__ledpwm.ChangeDutyCycle(100-intensity)
 
     def on(self,intensity=100):
         """
         Switches the led ring on
         """
-        if self.__led_state == "on":
-            return
-        self.__ledpwm.start(100-intensity)
-        self.__led_state = "on"
+        if self.__led_intensity != intensity:
+            self.dimm(intensity)
+            self.__led_intensity = intensity
 
+     
     def off(self):
         """
         Switches the led ring on
         """
-        if self.__led_state == "off":
-            return
-        self.__ledpwm.ChangeDutyCycle(100)
-        self.__led_state = "off"
+        self.dimm(0)
+
 
     def __heartbeat(self,switch_event):
         
@@ -67,17 +67,18 @@ class Led(object):
     
     def set_heartbeat_speed(self,speed):
         """
-        Speed parameter can be set in between 1 and 3 (including 1 and 3)
+        Speed parameter can be set in between 1 and 100
         """
-        if speed > 3:
-            speed = 3
+        if speed > 99:
+            speed = 99
         elif speed < 1:
             speed = 1
-        self.__heartbeat_speed = (4-speed)/1000
+
+        self.__heartbeat_speed = (200-speed)/100000
 
     def heartbeat_on(self,speed=1):
         self.set_heartbeat_speed(speed)
-        self.__ledpwm.start(100)
+        self.__ledpwm.ChangeDutyCycle(100)
         self.__hearbeat_switch.set()
     
     def heartbeat_off(self):
@@ -127,7 +128,15 @@ class Led(object):
 if __name__ == "__main__":
 
     led = Led()
+    """    
+    led.on(10)
+    time.sleep(3)
+    led.on(100)
+    time.sleep(3)
+    led.off()
+    time.sleep(1)
+    """
 
-    led.heartbeat_on(speed=1)
-    time.sleep(5)
+    led.heartbeat_on(speed=50)
+    time.sleep(15)
     led.heartbeat_off()
