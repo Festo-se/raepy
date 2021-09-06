@@ -182,10 +182,13 @@ class Servo(object):
         returns the motor current in milliAmps
         """
         current = self._lss.getCurrent()
-        if current is None:
-            return current
-        else:
-            return int(current)
+        cnt = 0
+        while current is None:
+            current = self._lss.getCurrent()
+            cnt +=1
+            if cnt > 5:
+                raise SerialConnectionError
+        return int(current)
 
     def actual_angle(self):
         """
@@ -205,9 +208,12 @@ class Servo(object):
         returns the current speed in 1/10 °/sec
         """
         speed = self._lss.getSpeed()
-        if speed == None:
-            return speed
-        else:
+        cnt = 0
+        while speed is None:
+            speed = self._lss.getSpeed()
+            cnt+=1
+            if cnt >5:
+                raise SerialConnectionError
             return int(speed)
 
     def actual_LED_color(self):
